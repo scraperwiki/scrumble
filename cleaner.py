@@ -1,6 +1,8 @@
 def keeper(s):
+    if not(isinstance(s, basestring)):
+        return s
     new = []
-    for i in str(s):
+    for i in s:
         if i in '-0123456789.,()':
             new.append(i)
         else:
