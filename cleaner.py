@@ -1,12 +1,11 @@
-def replacer(s):
+def keeper(s):
     new = []
     for i in str(s):
-        if i in '0123456789.,()':
+        if i in '-0123456789.,()':
             new.append(i)
         else:
             new.append(' ')
-    return ''.join(new)
-
+    return ''.join(new).strip()
 
 def is_int(s, strict=False):
     return None
@@ -17,10 +16,10 @@ def is_float(s, strict=False):
 
 
 def as_int(s, strict=False):
-    return int(s)
-    #return int(str(as_float(s)))
+    return int(as_float(s, strict))
 
 def as_float(s, strict=False):
-    #r = replacer(s)
-    return float(s)
+    print s
+    r = keeper(s)
+    return float(r)
 
