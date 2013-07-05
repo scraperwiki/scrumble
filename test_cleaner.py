@@ -17,4 +17,4 @@ def cleaner_float(before, after, strict):
     assert_equal(cleaner.as_float(before, strict=strict), after)
 
 def cleaner_int(before, after, strict):
-    assert_equal(cleaner.as_int(before, strict=strict) == after)
+    assert_equal(cleaner.as_int(before, strict=strict), after)

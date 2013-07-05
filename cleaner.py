@@ -9,6 +9,11 @@ def keeper(s):
             new.append(' ')
     return ''.join(new).strip()
 
+
+def nocommas(s):
+    return s.replace(',', '')
+
+
 def is_int(s, strict=False):
     return None
 
@@ -20,8 +25,9 @@ def is_float(s, strict=False):
 def as_int(s, strict=False):
     return int(as_float(s, strict))
 
+
 def as_float(s, strict=False):
     print s
-    r = keeper(s)
-    return float(r)
-
+    s = keeper(s)
+    s = nocommas(s)
+    return float(s)
