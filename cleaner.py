@@ -25,8 +25,9 @@ def is_float(s, strict=False):
 def as_int(s, strict=False):
     return int(as_float(s, strict))
 
-
 def as_float(s, strict=False):
+    if not(isinstance(s, basestring)):
+        return float(s)
     print s
     s = keeper(s)
     s = nocommas(s)
