@@ -1,6 +1,6 @@
 import examples as e
 import cleaner
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_raises
 
 
 def test_all():
@@ -14,7 +14,13 @@ def test_all():
         yield cleaner_float, i, e.float_loose[i], False
        
 def cleaner_float(before, after, strict):
-    assert_equal(cleaner.as_float(before, strict=strict), after)
+    if isinstance(after, Exception):
+        assert_raises(cleaner.as_float(before, strict=strict))
+    else:
+        assert_equal(cleaner.as_float(before, strict=strict), after)
 
 def cleaner_int(before, after, strict):
-    assert_equal(cleaner.as_int(before, strict=strict), after)
+    if isinstance(after, Exception):
+        assert_raises(cleaner.as_int(before, strict=strict))
+    else:
+        assert_equal(cleaner.as_int(before, strict=strict), after)

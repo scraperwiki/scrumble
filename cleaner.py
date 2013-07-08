@@ -10,6 +10,10 @@ def keeper(s):
     return ''.join(new).strip()
 
 
+def has_number(s):
+    return any(i in s for i in "0123456789")
+    
+
 def nocommas(s):
     return s.replace(',', '')
 
@@ -25,9 +29,12 @@ def is_float(s, strict=False):
 def as_int(s, strict=False):
     return int(as_float(s, strict))
 
+
 def as_float(s, strict=False):
     if not(isinstance(s, basestring)):
         return float(s)
+    if not has_number(s):
+        return None
     print s
     s = keeper(s)
     s = nocommas(s)
