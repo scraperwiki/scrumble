@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-class Nope(Exception):
-    pass
+from cleaner import NaNError
+import cleaner
 
 def stitch(l):
     d={}
@@ -15,31 +15,31 @@ strict_ints = {
     1: 1,
     1.0: 1,
     -1.0: -1,
-    1.5: Nope,
+    1.5: NaNError,
     "0": 0,
     "1": 1,
     "1.0": 1,
     "1.00000004": 1,
     "2.9999995": 3,
-    "3.14159": Nope,
+    "3.14159": NaNError,
     "1020": 1020,
     "1,020": 1020,
     "-4": -4,
     "(14)": -14,
     "1,010,444.00": 1010444,
     "   \t\r\n\n\r2,021.00\r  \r\n\xa0": 2021,
-    "1,01": Nope,
+    "1,01": NaNError,
     "": None,
     "...": None,
     "NA": None,
-    "12 14": Nope,
+    "12 14": NaNError,
     "$1000": 1000
 }
 
 loose_ints = {
     "3 cats": 3,
     "2.0 cats": 2,
-    "2.4 children": Nope,
+    "2.4 children": NaNError,
     "-12 cats": -12,
     u"\U0001F4A9 42 ostrich": 42,
 }
@@ -67,14 +67,16 @@ int_loose = stitch([strict_ints, loose_ints])
 float_strict = stitch([strict_ints, strict_floats])
 float_loose = stitch([strict_ints, loose_ints, strict_floats, loose_floats])
 
+ops = [
+      [int_strict, cleaner.as_int, True],
+      [int_loose, cleaner.as_int, False],
+      [float_strict, cleaner.as_float, True],
+      [float_loose, cleaner.as_float, False],
+      ]
 def alltests():
     
-    for i in int_strict:
-        assert cleaner.as_int(i, strict=True) == int_strict[i]
-    for i in int_loose:
-        assert cleaner.as_int(i, strict=False) == int_loose[i]
-    for i in float_strict:
-        assert cleaner.as_float(i, strict=True) == float_strict[i]
-    for i in float_loose:
-        assert cleaner.as_float(i, strict=False) == float_loose[i]
+    for op in ops:
+        testcases, function, strict = op
+        for test in testcases:
+            assert function(test, strict=strict) == testcases[test]
     

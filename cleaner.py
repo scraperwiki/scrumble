@@ -76,4 +76,8 @@ def as_float(s, strict=False):
     s = keeper(s)
     s = nocommas(s)
     s = nospaceafterhyphen(s)
-    return float(s)
+    try:
+        return float(s)
+    except ValueError:
+        raise NaNError(NaN(s))
+
