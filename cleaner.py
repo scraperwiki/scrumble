@@ -66,25 +66,24 @@ def is_float(s, strict=False):
 
 
 def float_to_int(f):
-    if abs(int(f)-f) < EPSILON:
-        return int(round(f))
+    r = int(round(f))
+    if abs(r-f) < EPSILON:
+        print "SUCCESS"
+        return r
     else:
+        print "FAIL", abs(r-f)
         return NaN(str(f))
 
 
 def as_int(s, strict=False):
     if not(isinstance(s, basestring)):
-        print "NOT A STRING"
+        print type(s)
         return float_to_int(s)
     f = as_float(s, strict)
     if f is None or isinstance(f, NaN):
-        print "ALREADY NAN"
         return f
     else:
-        try:
-            return float_to_int(f)
-        except NaNError:
-            raise NaNError(s)
+        return float_to_int(f)
 
 
 def as_float(s, strict=False):
@@ -94,7 +93,6 @@ def as_float(s, strict=False):
             return float(s)
         if not has_number(s):
             return None
-        print s
         s = brackets(s)
         s = keeper(s)
         s = nocommas(s)
