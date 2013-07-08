@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from cleaner import NaNError
+from cleaner import NaN
 import cleaner
 
 def stitch(l):
@@ -15,31 +15,31 @@ strict_ints = {
     1: 1,
     1.0: 1,
     -1.0: -1,
-    1.5: NaNError,
+    1.5: NaN,
     "0": 0,
     "1": 1,
     "1.0": 1,
     "1.00000004": 1,
     "2.9999995": 3,
-    "3.14159": NaNError,
+    "3.14159": NaN,
     "1020": 1020,
     "1,020": 1020,
     "-4": -4,
     "(14)": -14,
     "1,010,444.00": 1010444,
     "   \t\r\n\n\r2,021.00\r  \r\n\xa0": 2021,
-    "1,01": NaNError,
+    "1,01": NaN,
     "": None,
     "...": None,
     "NA": None,
-    "12 14": NaNError,
+    "12 14": NaN,
     "$1000": 1000
 }
 
 loose_ints = {
     "3 cats": 3,
     "2.0 cats": 2,
-    "2.4 children": NaNError,
+    "2.4 children": NaN,
     "-12 cats": -12,
     u"\U0001F4A9 42 ostrich": 42,
 }
@@ -78,5 +78,9 @@ def alltests():
     for op in ops:
         testcases, function, strict = op
         for test in testcases:
-            assert function(test, strict=strict) == testcases[test]
+            rval = function(test, strict=strict)
+            if testcases[test] == NaN:
+                assert isinstance(rval, NaN)
+            else:
+                assert function(test, strict=strict) == testcases[test]
     
