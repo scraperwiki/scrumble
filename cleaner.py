@@ -1,5 +1,5 @@
 import re
-EPSILON = 0.001
+EPSILON = 0.00001
 
 
 class NaN(str):
@@ -58,20 +58,18 @@ def nospaceafterhyphen(s):
 
 
 def is_int(s, strict=False):
-    return None
+    return not(isinstance(as_int(s, strict), NaN))
 
 
 def is_float(s, strict=False):
-    return None
+    return not(isinstance(as_float(s, strict), NaN))
 
 
 def float_to_int(f):
     r = int(round(f))
     if abs(r-f) < EPSILON:
-        print "SUCCESS"
         return r
     else:
-        print "FAIL", abs(r-f)
         return NaN(str(f))
 
 
