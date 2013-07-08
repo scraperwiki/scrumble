@@ -45,7 +45,12 @@ def has_number(s):
 
 
 def nocommas(s):
-    return s.replace(',', '')
+    # TODO: confirm in threes.
+    bad_comma = any(m.start() for m in re.finditer(',(?!\d\d\d)', s))
+    if bad_comma:
+        raise NaNError(NaN(s))
+    else:
+        return s.replace(',', '')
 
 
 def nospaceafterhyphen(s):
