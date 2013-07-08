@@ -27,7 +27,11 @@ def is_float(s, strict=False):
 
 
 def as_int(s, strict=False):
-    return int(as_float(s, strict))
+    f = as_float(s, strict)
+    if f is None:
+        return f
+    else:
+        return int(f)
 
 
 def as_float(s, strict=False):
