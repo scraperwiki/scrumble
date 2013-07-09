@@ -1,8 +1,9 @@
+import unicodedata
 import re
 EPSILON = 0.00001
 
 
-class NaN(str):
+class NaN(unicode):
     pass
 
 
@@ -10,7 +11,7 @@ class NaNError(Exception):
     pass
 
 
-def keeper(s):
+def keeper(s, strict=False):
     if not(isinstance(s, basestring)):
         return s
     new = []
@@ -18,6 +19,9 @@ def keeper(s):
         if i in '-0123456789.,()':
             new.append(i)
         else:
+            u = unicodedata.category(i)
+            if strict and u not in ["Sc", "Pd", "Zs", "Cc"]:
+                raise NaNError(NaN(""))
             new.append(' ')
     return ''.join(new).strip()
 
@@ -27,7 +31,7 @@ def brackets(s):
     if there are brackets in a sensible place,
     remove them and slap a - before it all.
     """
-    bracketted = re.findall('(.*)\((.*)\)(.*)', s)
+    bracketted = re.findall('(.*)\((.*)\)(.*)', s, flags = re.S)
     if len(bracketted) != 1:
         if "(" in s or ")" in s:
             raise NaNError(NaN(s))  # brackets, but not matching ones!
@@ -45,7 +49,6 @@ def has_number(s):
 
 
 def nocommas(s):
-    # TODO: confirm in threes.
     bad_comma = any(m.start() for m in re.finditer(',(?!\d\d\d)', s))
     if bad_comma:
         raise NaNError(NaN(s))
@@ -55,6 +58,15 @@ def nocommas(s):
 
 def nospaceafterhyphen(s):
     return re.sub('-\s*', '-', s)
+
+
+def as_unicode(s):
+    if isinstance(s, unicode):
+        return s
+    try:
+        return s.decode('utf-8')
+    except UnicodeDecodeError:
+        return s.decode('latin-1')
 
 
 def is_int(s, strict=False):
@@ -75,7 +87,6 @@ def float_to_int(f):
 
 def as_int(s, strict=False):
     if not(isinstance(s, basestring)):
-        print type(s)
         return float_to_int(s)
     f = as_float(s, strict)
     if f is None or isinstance(f, NaN):
@@ -86,18 +97,19 @@ def as_int(s, strict=False):
 
 def as_float(s, strict=False):
     try:
-        s_orig = s
         if not(isinstance(s, basestring)):
             return float(s)
-        if not has_number(s):
+        su = as_unicode(s)
+        su_orig = su
+        if not has_number(su):
             return None
-        s = brackets(s)
-        s = keeper(s)
-        s = nocommas(s)
-        s = nospaceafterhyphen(s)
+        su = brackets(su)
+        su = keeper(su, strict=strict)
+        su = nocommas(su)
+        su = nospaceafterhyphen(su)
         try:
-            return float(s)
+            return float(su)
         except ValueError:
-            return NaN(s_orig)
-    except NaNError, e:
-        return NaN(s_orig)
+            return NaN(su_orig)
+    except NaNError:
+        return NaN(su_orig)

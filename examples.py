@@ -3,12 +3,13 @@
 from cleaner import NaN
 import cleaner
 
+
 def stitch(l):
-    d={}
+    d = {}
     for i in l:
         d.update(i)
     return d
-    
+
 strict_ints = {
     0: 0,
     -1: -1,
@@ -27,7 +28,8 @@ strict_ints = {
     "-4": -4,
     "(14)": -14,
     "1,010,444.00": 1010444,
-    "   \t\r\n\n\r2,021.00\r  \r\n\xa0": 2021,
+    u"   \t\r\n\n\r2,021.00\r  \r\n\xa0": 2021,
+    "  (\t\t\r\n2\t\t\r\n )  ": -2,
     "1,01": NaN,
     "": None,
     "...": None,
@@ -64,9 +66,14 @@ loose_floats = {
     "[2.2]": 2.2,
 }
 
-int_strict = stitch([strict_ints])
+
+def bad(loose):
+    return {x: NaN for x in loose}
+
+int_strict = stitch([strict_ints, bad(loose_ints)])
 int_loose = stitch([strict_ints, loose_ints])
-float_strict = stitch([strict_ints, strict_floats])
+float_strict = stitch([strict_ints, strict_floats,
+                       bad(loose_floats), bad(loose_ints)])
 float_loose = stitch([strict_ints, loose_ints, strict_floats, loose_floats])
 
 ops = [
@@ -74,9 +81,10 @@ ops = [
       [int_loose, cleaner.as_int, False],
       [float_strict, cleaner.as_float, True],
       [float_loose, cleaner.as_float, False],
-      ]
+]
+
+
 def alltests():
-    
     for op in ops:
         testcases, function, strict = op
         for test in testcases:
@@ -85,4 +93,3 @@ def alltests():
                 assert isinstance(rval, NaN)
             else:
                 assert function(test, strict=strict) == testcases[test]
-    
