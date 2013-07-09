@@ -1,5 +1,5 @@
 import examples as e
-import cleaner
+import scrumble
 from nose.tools import assert_equal
 
 
@@ -16,8 +16,8 @@ def test_all():
 
 def cleaner_float(before, after, strict):
     print "FLOAT ", before, after, strict
-    rval = cleaner.as_float(before, strict=strict)
-    if after == cleaner.NaN:
+    rval = scrumble.as_float(before, strict=strict)
+    if after == scrumble.NaN:
         assert isinstance(rval, after), "got %r, isn't NaN"%rval
     else:
         assert_equal(rval, after)
@@ -25,8 +25,8 @@ def cleaner_float(before, after, strict):
 
 def cleaner_int(before, after, strict):
     print "INT ", before, after, strict
-    rval = cleaner.as_int(before, strict=strict)
-    if after == cleaner.NaN:
+    rval = scrumble.as_int(before, strict=strict)
+    if after == scrumble.NaN:
         assert isinstance(rval, after), "got %r, isn't NaN"%rval
     else:
         assert_equal(rval, after)

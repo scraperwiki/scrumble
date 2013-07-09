@@ -69,12 +69,20 @@ def as_unicode(s):
         return s.decode('latin-1')
 
 
+def is_x(s, fun, **kwargs):
+    v = fun(s, strict)
+    if v is None:
+        return None
+    else:
+        return not(isinstance(v, NaN))
+
+
 def is_int(s, strict=False):
-    return not(isinstance(as_int(s, strict), NaN))
+    return is_x(s, as_int, strict=strict)
 
 
 def is_float(s, strict=False):
-    return not(isinstance(as_float(s, strict), NaN))
+    return is_x(s, as_float, strict=strict)
 
 
 def float_to_int(f):
