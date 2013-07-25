@@ -1,5 +1,5 @@
 import examples as e
-import cleaner
+import numbers
 from nose.tools import assert_equal
 
 
@@ -16,17 +16,17 @@ def test_all():
 
 def cleaner_float(before, after, strict):
     print "FLOAT ", before, after, strict
-    rval = cleaner.as_float(before, strict=strict)
-    if after == cleaner.NaN:
-        assert isinstance(rval, after), "got %r, isn't NaN"%rval
+    rval = numbers.as_float(before, strict=strict)
+    if after == numbers.NaN:
+        assert isinstance(rval, after), "got %r, isn't NaN" % rval
     else:
         assert_equal(rval, after)
 
 
 def cleaner_int(before, after, strict):
     print "INT ", before, after, strict
-    rval = cleaner.as_int(before, strict=strict)
-    if after == cleaner.NaN:
-        assert isinstance(rval, after), "got %r, isn't NaN"%rval
+    rval = numbers.as_int(before, strict=strict)
+    if after == numbers.NaN:
+        assert isinstance(rval, after), "got %r, isn't NaN" % rval
     else:
         assert_equal(rval, after)
