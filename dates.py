@@ -34,8 +34,18 @@ class fakedate(dict):
         else:
             return datetime.datetime(**self)
 
+    def isvalid(self):
+        try:
+            dt = datetime.datetime(year=2013, month=1, day=1)
+            dt.replace(**self)
+        except ValueError:
+            return False
+        else:
+            return True
+
     def isoformat(self):
-        # TODO test me
+        # TODO better error type: example 2013-02-29
+        assert self.isvalid(), "Inappropriate values: %r" % self
         periods = ['year', 'month',  'day',
                    'hour',  'minute', 'second', 'microsecond']
         fstring = ['%d',   '-%02d', '-%02d',
@@ -45,11 +55,13 @@ class fakedate(dict):
             if p in self:
                 builder.append(f % self[p])
             else:
-                # TODO better error message - has skipped periods!
-                assert len(builder) == len(self) - int('tzinfo' in self)
+                # TODO better error type
+                assert len(builder) == len(self) - int('tzinfo' in self), \
+                    "Skips time periods: %r" % self
         if 'tzinfo' in self:
-            # TODO better error message - timezone but no time!
-            assert len(builder) > 3  # has an hour
+            # TODO better error type
+            assert len(builder) > 3, \
+                "Has timezone but no time: %r" % self  # has an hour
             builder.append(datetime.time(tzinfo=self['tzinfo']).strftime("%z"))
         return ''.join(builder)
 
