@@ -1,5 +1,5 @@
 from nose.tools import assert_equal
-import datehack
+import dates
 from dateutil.tz import tzoffset
 
 partial = [
@@ -46,12 +46,12 @@ def test_basic():
 
 
 def do_basic(p):
-    return assert_equal(p[2], dict(datehack.as_date(p[0])))
+    return assert_equal(p[2], dict(dates.as_date(p[0])))
  
 
 def do_isoformat(p):
     try:
-        iso = datehack.as_date(p[0]).isoformat()
+        iso = dates.as_date(p[0]).isoformat()
     except AssertionError:
         assert_equal(p[1], None)
     else:

@@ -3,10 +3,20 @@ import datetime
 
 
 class fakedate(dict):
+    touched = False
+
     def __nonzero__(self):
-        return True
+        """needed because dateutil checks 'if default',
+           instead of 'if default is None'"""
+        if not self.touched:
+            return True
+        else:
+            return bool(dict(self))
 
     def replace(self, **kwargs):
+        """replicates datetime behaviour;
+           resets nonzero to ensure minimal surprise"""
+        self.touched = True
         self.update(dict(kwargs))
         return self
 
@@ -31,38 +41,20 @@ class fakedate(dict):
         fstring = ['%d',   '-%02d', '-%02d',
                    'T%02d', ':%02d',  ':%02d',  '.%06d']
         builder = []
-        for i, p in enumerate(periods):
+        for p, f in zip(periods, fstring):
             if p in self:
-                builder.append(fstring[i] % self[p])
+                builder.append(f % self[p])
             else:
-                assert len(builder) == len(self) - int('tzinfo' in self)
                 # TODO better error message - has skipped periods!
+                assert len(builder) == len(self) - int('tzinfo' in self)
         if 'tzinfo' in self:
-            assert len(builder) > 3  # has an hour
             # TODO better error message - timezone but no time!
+            assert len(builder) > 3  # has an hour
             builder.append(datetime.time(tzinfo=self['tzinfo']).strftime("%z"))
         return ''.join(builder)
 
 
-def parsedate(s, default=None, **kwargs):
+def as_date(s, default=None, **kwargs):
     if default is None:
         default = fakedate()
     return dateutil.parser.parse(s, default=default, **kwargs)
-
-f = parsedate("2013 jan 01 11:22 +0200")
-print f
-print f.isoformat()
-exit()
-print f['month']
-f = dateutil.parser.parse("01 jan 2001", default=fakedate())
-print f
-print f.date()
-
-#parsedate(s) # good name?
-
-
-print f.date()
-print f.time()  # TODO: enforce requiring "enough" data (hours?min?sec?)
-              # TODO: allow enforcing a default (ie. assume 01-Jan-XXXX)
-print f.month
-print f.year
