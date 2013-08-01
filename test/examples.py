@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from numbers import NaN
-import numbers
+from scrumble import NaN
+import scrumble
 
 
 def stitch(l):
@@ -77,10 +77,10 @@ float_strict = stitch([strict_ints, strict_floats,
 float_loose = stitch([strict_ints, loose_ints, strict_floats, loose_floats])
 
 ops = [
-      [int_strict, numbers.as_int, True],
-      [int_loose, numbers.as_int, False],
-      [float_strict, numbers.as_float, True],
-      [float_loose, numbers.as_float, False],
+      [int_strict, scrumble.as_int, True],
+      [int_loose, scrumble.as_int, False],
+      [float_strict, scrumble.as_float, True],
+      [float_loose, scrumble.as_float, False],
 ]
 
 
