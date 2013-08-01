@@ -52,7 +52,7 @@ def do_basic(p):
 def do_isoformat(p):
     try:
         iso = scrumble.as_date(p[0]).isoformat()
-    except AssertionError:
+    except scrumble.DateError:
         assert_equal(p[1], None)
     else:
         assert_equal(p[1], iso)

@@ -1,6 +1,15 @@
 import dateutil.parser
 import datetime
 
+class DateError(Exception):
+    pass
+
+class DateBoundsError(DateError):
+    pass
+
+class IncompleteDateError(DateError):
+    pass
+
 
 class fakedate(dict):
     touched = False
@@ -20,12 +29,11 @@ class fakedate(dict):
         self.update(dict(kwargs))
         return self
 
-    # TODO: decide if automatic datetime-ing is in, out, or optional
     def __getattr__(self, name):
-        if name in self:
+        try:
             return self[name]
-        else:
-            return getattr(self.datetime(), name)
+        except KeyError:
+            raise AttributeError("fakedate doesn't contain a %r" % name)
 
     def datetime(self, default=None):
         if default:
@@ -35,8 +43,13 @@ class fakedate(dict):
             return datetime.datetime(**self)
 
     def isvalid(self):
+        """Are the date fragments we have consistent?
+           We use 2012-01-01 because:
+           * 2012 is a leap year      (so XXXX Feb 29 is valid)
+           * January has 31 days      (so XXXX XXX 31 is valid)
+           * Every month has a first. (so XXXX Feb XX is valid)"""
         try:
-            dt = datetime.datetime(year=2013, month=1, day=1)
+            dt = datetime.datetime(year=2012, month=1, day=1)
             dt.replace(**self)
         except ValueError:
             return False
@@ -44,8 +57,6 @@ class fakedate(dict):
             return True
 
     def isoformat(self):
-        # TODO better error type: example 2013-02-29
-        assert self.isvalid(), "Inappropriate values: %r" % self
         periods = ['year', 'month',  'day',
                    'hour',  'minute', 'second', 'microsecond']
         fstring = ['%d',   '-%02d', '-%02d',
@@ -55,13 +66,14 @@ class fakedate(dict):
             if p in self:
                 builder.append(f % self[p])
             else:
-                # TODO better error type
-                assert len(builder) == len(self) - int('tzinfo' in self), \
-                    "Skips time periods: %r" % self
+                if len(builder) != len(self) - int('tzinfo' in self):
+                    print builder, self
+                    raise IncompleteDateError(self)
+        if not self.isvalid():
+            raise DateBoundsError(self)  # eg: Feb 30th
         if 'tzinfo' in self:
-            # TODO better error type
-            assert len(builder) > 3, \
-                "Has timezone but no time: %r" % self  # has an hour
+            if len(builder) < 4:
+                raise IncompleteDateError(self)
             builder.append(datetime.time(tzinfo=self['tzinfo']).strftime("%z"))
         return ''.join(builder)
 
@@ -70,3 +82,6 @@ def as_date(s, default=None, **kwargs):
     if default is None:
         default = fakedate()
     return dateutil.parser.parse(s, default=default, **kwargs)
+
+def is_date(**kwargs):
+    return as_date(**kwargs).isvalid()
