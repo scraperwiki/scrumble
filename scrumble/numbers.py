@@ -72,7 +72,7 @@ def as_unicode(s):
 def is_x(s, fun, **kwargs):
     v = fun(s, strict)
     if v is None:
-        return None
+        return False
     else:
         return not(isinstance(v, NaN))
 
