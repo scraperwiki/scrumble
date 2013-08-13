@@ -10,8 +10,10 @@ class DateBoundsError(DateError):
 class IncompleteDateError(DateError):
     pass
 
+PERIODS = ['year', 'month',  'day',
+           'hour',  'minute', 'second', 'microsecond']
 
-class fakedate(dict):
+class PartialDate(dict):
     touched = False
 
     def __nonzero__(self):
@@ -42,12 +44,44 @@ class fakedate(dict):
         else:
             return datetime.datetime(**self)
 
-    def isvalid(self):
-        """Are the date fragments we have consistent?
-           We use 2012-01-01 because:
-           * 2012 is a leap year      (so XXXX Feb 29 is valid)
-           * January has 31 days      (so XXXX XXX 31 is valid)
-           * Every month has a first. (so XXXX Feb XX is valid)"""
+    def is_contiguously_specified(self, require_year=False):
+        """
+        A date is contiguously specified if there is no gap between
+        time periods: e.g. if there is a year and a day, there must be a month.
+        """
+
+        if require_year and "year" not in self:
+            return False
+
+        no_further = seen_period = False
+
+        for p in PERIODS:
+            if p in self:
+                if no_further:
+                    # There aren't supposed to be any other periods specified.
+                    # The date isn't contiguous.
+                    return False
+
+                # We've encountered a period
+                seen_period = True
+
+            elif seen_period:
+                # We've seen a period, and now also a gap. There shouldn't be
+                # further date fragments.
+                no_further = True
+
+        return True
+
+    def is_valid(self):
+        """
+        Is the date represented by self a valid date on the gregorian calendar?
+
+        Are the date fragments we have consistent?
+        We use 2012-01-01 because:
+        * 2012 is a leap year      (so XXXX Feb 29 is valid)
+        * January has 31 days      (so XXXX XXX 31 is valid)
+        * Every month has a first. (so XXXX Feb XX is valid)
+        """
         try:
             dt = datetime.datetime(year=2012, month=1, day=1)
             dt.replace(**self)
@@ -57,31 +91,58 @@ class fakedate(dict):
             return True
 
     def isoformat(self):
-        periods = ['year', 'month',  'day',
-                   'hour',  'minute', 'second', 'microsecond']
+        """
+        Return this PartialDate as a valid partial ISO8601 formatted string.
+        e.g, 1234, 1234-05-06, 1234-05-06T07:08
+        """
         fstring = ['%d',   '-%02d', '-%02d',
                    'T%02d', ':%02d',  ':%02d',  '.%06d']
         builder = []
-        for p, f in zip(periods, fstring):
+
+        if not self.is_contiguously_specified(require_year=True):
+            raise IncompleteDateError(self)
+
+        for p, f in zip(PERIODS, fstring):
             if p in self:
                 builder.append(f % self[p])
-            else:
-                if len(builder) != len(self) - int('tzinfo' in self):
-                    print builder, self
-                    raise IncompleteDateError(self)
-        if not self.isvalid():
+
+        if not self.is_valid():
             raise DateBoundsError(self)  # eg: Feb 30th
+
         if 'tzinfo' in self:
-            if len(builder) < 4:
+            # If a tzinfo is present, it doesn't make sense to be missing an
+            # hour:
+            if "hour" not in self:
                 raise IncompleteDateError(self)
+
             builder.append(datetime.time(tzinfo=self['tzinfo']).strftime("%z"))
+
         return ''.join(builder)
 
 
-def as_date(s, default=None, **kwargs):
-    if default is None:
-        default = fakedate()
-    return dateutil.parser.parse(s, default=default, **kwargs)
+def as_date(inputstring, default=None, **kwargs):
+    """
+    Attempts to return an inputstring as a partial date.
 
-def is_date(**kwargs):
-    return as_date(**kwargs).isvalid()
+    Currently implemented using dateutil.parser.parse.
+
+    Valid kwargs:
+
+        parserinfo (a dateutil.parser.parserinfo instance)
+        default: a template for the returned value; datetime-like, must
+                 implement replace and be truthy
+        ignoretz (parse): don't interpret timezone
+        tzinfos (parse): datetime.tzinfo instance
+        dayfirst (_parse): hint that that day is probably first
+        yearfirst (_parse): hint that the year is probably first
+        fuzzy (_parse): tolerate more malformed strings
+    """
+    if default is None:
+        default = PartialDate()
+    return dateutil.parser.parse(inputstring, default=default, **kwargs)
+
+def is_date(inputstring, **kwargs):
+    d = as_date(inputstring, **kwargs)
+    if not d.is_contiguously_specified():
+        return False
+    return d.is_valid()
