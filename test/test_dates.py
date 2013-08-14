@@ -55,6 +55,9 @@ def test_basic():
         yield do_isoformat, input_date, iso_output, raw_output
         yield do_isdate, input_date, iso_output, raw_output
 
+def test_fail():
+    assert_false(scrumble.is_date("x"))
+
 
 def do_check_dateutil_parsing(input_date, iso_output):
 

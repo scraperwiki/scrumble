@@ -142,7 +142,10 @@ def as_date(inputstring, default=None, **kwargs):
     return dateutil.parser.parse(inputstring, default=default, **kwargs)
 
 def is_date(inputstring, **kwargs):
-    d = as_date(inputstring, **kwargs)
+    try:
+        d = as_date(inputstring, **kwargs)
+    except ValueError:  # dateutil hated the string.
+        return False
     if not d.is_contiguously_specified():
         return False
     return d.is_valid()
