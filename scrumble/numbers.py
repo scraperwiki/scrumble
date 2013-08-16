@@ -20,6 +20,8 @@ def keeper(s, strict=False):
             new.append(i)
         else:
             u = unicodedata.category(i)
+            # Unicode Character Categories
+            # http://www.fileformat.info/info/unicode/category/index.htm
             if strict and u not in ["Sc", "Pd", "Zs", "Cc"]:
                 raise NaNError(NaN(""))
             new.append(' ')
@@ -69,7 +71,7 @@ def as_unicode(s):
         return s.decode('latin-1')
 
 
-def is_x(s, fun, **kwargs):
+def is_x(s, fun, strict = False, **kwargs):
     v = fun(s, strict)
     if v is None:
         return None
