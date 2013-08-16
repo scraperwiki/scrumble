@@ -13,6 +13,9 @@ def test_all():
     for i in e.float_loose:
         yield cleaner_float, i, e.float_loose[i], False
 
+def test_things():
+    assert not scrumble.is_int("<5", strict=True)
+
 
 def cleaner_float(before, after, strict):
     print "FLOAT ", before, after, strict
