@@ -62,6 +62,10 @@ def nospaceafterhyphen(s):
     return re.sub('-\s*', '-', s)
 
 
+def remove_space_as_thousand_separator(s):
+    return re.sub('(\d*)[ ](\d{3})', '\\1\\2', s)
+
+
 def as_unicode(s):
     if isinstance(s, unicode):
         return s
@@ -117,6 +121,7 @@ def as_float(s, strict=False):
         su = keeper(su, strict=strict)
         su = nocommas(su)
         su = nospaceafterhyphen(su)
+        su = remove_space_as_thousand_separator(su)
         try:
             return float(su)
         except ValueError:
