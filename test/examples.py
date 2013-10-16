@@ -43,7 +43,8 @@ strict_ints = {
     " 123  345": NaN,
     u"12\xa0345": 12345,
     "12 345 678": 12345678,
-    "$1000": 1000
+    "$1000": 1000,
+    "1d100": NaN,
 }
 
 # These mappings should only be true in loose mode,
