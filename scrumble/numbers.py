@@ -63,7 +63,7 @@ def nospaceafterhyphen(s):
 
 
 def remove_space_as_thousand_separator(s):
-    return re.sub('(\d*)[ ](\d{3})', '\\1\\2', s)
+    return re.sub(r'[ \xa0](\d{3})\b', r'\1', s)
 
 
 def as_unicode(s):
@@ -118,10 +118,10 @@ def as_float(s, strict=False):
         if not has_number(su):
             return None
         su = brackets(su)
+        su = remove_space_as_thousand_separator(su)
         su = keeper(su, strict=strict)
         su = nocommas(su)
         su = nospaceafterhyphen(su)
-        su = remove_space_as_thousand_separator(su)
         try:
             return float(su)
         except ValueError:
