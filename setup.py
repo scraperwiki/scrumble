@@ -31,3 +31,4 @@ setup(
     tests_require=[],
     entry_points="",
 )
+

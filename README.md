@@ -16,7 +16,11 @@ Scrumble has various functions for processing cases like that.
 Testing
 -------
 
-Run 
+Run this command to run the tests.
 
-$ nosetests --with-doctest
+```
+$ nosetests
+```
+
+[![Build Status](https://travis-ci.org/scraperwiki/scrumble.png?branch=master)](https://travis-ci.org/scraperwiki/scrumble)
 
