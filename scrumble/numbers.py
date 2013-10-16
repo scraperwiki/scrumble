@@ -63,7 +63,7 @@ def nospaceafterhyphen(s):
 
 
 def remove_space_as_thousand_separator(s):
-    return re.sub('(\d*)[ ](\d{3})', '\\1\\2', s)
+    return re.sub(r'(\d*)[ ](\d{3})\b', r'\1\2', s)
 
 
 def as_unicode(s):
