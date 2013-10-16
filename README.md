@@ -13,3 +13,10 @@ Some examples:
 
 Scrumble has various functions for processing cases like that.
 
+Testing
+-------
+
+Run 
+
+$ nosetests --with-doctest
+

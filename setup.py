@@ -5,7 +5,7 @@ long_desc = """TODO"""
 
 setup(
     name='scrumble',
-    version='0.0.1',
+    version='1.0.1',
     description="Get clean numbers, dates etc. from text",
     long_description=long_desc,
     classifiers=[
