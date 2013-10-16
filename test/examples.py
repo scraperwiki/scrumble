@@ -10,6 +10,8 @@ def stitch(l):
         d.update(i)
     return d
 
+# These mappings should be true when scrumble is run in
+# strict or loose mode
 strict_ints = {
     0: 0,
     -1: -1,
@@ -44,7 +46,10 @@ strict_ints = {
     "$1000": 1000
 }
 
+# These mappings should only be true in loose mode,
+# in strict mode all should produce NaN
 loose_ints = {
+    "a 123": 123,
     "3 cats": 3,
     "2.0 cats": 2,
     "2.4 children": NaN,
