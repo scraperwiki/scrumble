@@ -120,7 +120,7 @@ class PartialDate(dict):
         return ''.join(builder)
 
 
-def as_date(inputstring, default=None, **kwargs):
+def as_date(inputstring, default=None, fallback=Exception, **kwargs):
     """
     Attempts to return an inputstring as a partial date.
 
@@ -139,7 +139,13 @@ def as_date(inputstring, default=None, **kwargs):
     """
     if default is None:
         default = PartialDate()
-    return dateutil.parser.parse(inputstring, default=default, **kwargs)
+    if inputstring is None:
+        raise ValueError, "None is not a date string."
+    try:
+        return dateutil.parser.parse(inputstring, default=default, **kwargs)
+    except Exception:
+        if fallback == Exception: raise
+        return fallback
 
 def is_date(inputstring, **kwargs):
     try:
