@@ -139,8 +139,6 @@ def as_date(inputstring, default=None, fallback=Exception, **kwargs):
     """
     if default is None:
         default = PartialDate()
-    if inputstring is None:
-        raise ValueError, "None is not a date string."
     try:
         return dateutil.parser.parse(inputstring, default=default, **kwargs)
     except Exception:
