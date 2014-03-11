@@ -8,6 +8,10 @@ class DateutilParseFailure:
     pass
 
 partial = [
+    ["notadate",
+     DateutilParseFailure,
+     {}
+    ],
     ["mar 1982",
      "1982-03",
      {'month': 3, 'year': 1982},
@@ -72,7 +76,7 @@ def do_check_dateutil_parsing(input_date, iso_output):
 
 def do_basic(input_date, iso_output, raw_output):
     return assert_equal(raw_output, dict(scrumble.as_date(input_date)))
- 
+
 
 def do_isoformat(input_date, iso_output, raw_output):
     try:

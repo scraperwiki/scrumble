@@ -137,6 +137,8 @@ def as_date(inputstring, default=None, **kwargs):
         yearfirst (_parse): hint that the year is probably first
         fuzzy (_parse): tolerate more malformed strings
     """
+    if inputstring is None:
+        return PartialDate()
     if default is None:
         default = PartialDate()
     return dateutil.parser.parse(inputstring, default=default, **kwargs)
