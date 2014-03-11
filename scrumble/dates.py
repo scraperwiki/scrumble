@@ -5,9 +5,15 @@ class DateError(Exception):
     pass
 
 class DateBoundsError(DateError):
+    """The date is not in the calendar: e.g. Feb 30th"""
     pass
 
 class IncompleteDateError(DateError):
+    """The date cannot be made into an ISO string because of holes."""
+    pass
+
+class DateutilParseError(DateError, ValueError):
+    """Dateutil hates this, and raised a generic ValueError"""
     pass
 
 PERIODS = ['year', 'month',  'day',
@@ -141,7 +147,10 @@ def as_date(inputstring, default=None, **kwargs):
         return PartialDate()
     if default is None:
         default = PartialDate()
-    return dateutil.parser.parse(inputstring, default=default, **kwargs)
+    try:
+        return dateutil.parser.parse(inputstring, default=default, **kwargs)
+    except ValueError, e:
+        raise DateutilParseError, repr(inputstring)
 
 def is_date(inputstring, **kwargs):
     try:

@@ -8,6 +8,7 @@ cases = [
     ["Mar 2012", {'year': 2012, 'month': 3}],
     [None, {}],
     ["", {}],
+    ["not a date", None]
 ]
 
 
@@ -17,4 +18,7 @@ def test_basic():
 
 
 def do_basic(p):
-    return assert_equal(p[1], dict(scrumble.as_date(p[0])))
+    try:
+        return assert_equal(p[1], dict(scrumble.as_date(p[0])))
+    except scrumble.DateutilParseError:
+        assert p[1] is None
